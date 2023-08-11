@@ -1,7 +1,13 @@
 import express from "express";
 
 const app = express();
-const port = 3000;
+const port = 3001;
+
+function logger (req, res, next) {
+  console.log(req.method);
+  console.log(req.url);
+  next();
+}
 
 app.use(logger);
 
