@@ -1,4 +1,4 @@
-const countries = require("./level2/countries");
+const countries = require("../level2/level2-arrays/countries");
 /*PART 1*/
 const ages = [19, 22, 19, 24, 20, 25, 26, 24, 25, 24];
 
@@ -44,3 +44,23 @@ else console.log("The absolute differences are equal.");
 
 /*PART 2*/
 //Slice the first ten countries from the countries array
+const newCountryArray = countries.slice(10);
+
+//Find the middle country(ies) in the countries array
+const middleCountries = Math.floor(countries.length / 2);
+
+//Divide the countries array into two equal arrays if it is even. If countries array is not even , one more country for the first half.
+const midCountries = Math.floor(countries.length / 2);
+let firstHalf = [];
+let secondHalf = [];
+
+if (midCountries % 2 === 0) {
+  firstHalf = countries.slice(0, midCountries);
+  secondHalf = countries.slice(midCountries);
+  console.log("Original array is even: ", firstHalf, secondHalf);
+} else {
+  firstHalf = countries.slice(0, midCountries);
+  firstHalf.push("Malaysia");
+  secondHalf = countries.slice(midCountries);
+  console.log("Original array is odd: ", firstHalf, secondHalf);
+}
