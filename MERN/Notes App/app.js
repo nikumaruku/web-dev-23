@@ -13,6 +13,8 @@ const itemSchema = mongoose.Schema({
   name: String,
 });
 
+mongoose.connect("mongodb://localhost/notesDB");
+
 const items = mongoose.model("Items", itemSchema);
 
 const item1 = new items({ name: "Orange" });
@@ -21,20 +23,22 @@ const item3 = new items({ name: "Durian" });
 
 const collectionItems = [item1, item2, item3];
 
+// items.insertMany(collectionItems);
+
 app.get("/", function (req, res) {
-  res.render("list", { listTitle: day, newListItems: items });
+  res.render("list", { newListItems: collectionItems });
 });
 
 app.post("/", function (req, res) {
   const item = req.body.newItem;
 
-  if (req.body.list === "Work") {
-    workItems.push(item);
-    res.redirect("/work");
-  } else {
-    items.push(item);
-    res.redirect("/");
-  }
+  // if (req.body.list === "Work") {
+  //   workItems.push(item);
+  //   res.redirect("/work");
+  // } else {
+  //   items.push(item);
+  //   res.redirect("/");
+  // }
 });
 
 app.get("/work", function (req, res) {
