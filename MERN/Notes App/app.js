@@ -41,15 +41,23 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/", function (req, res) {
-  const item = req.body.newItem;
+  const itemName = req.body.newItem;
+  const item = new items({
+    name: itemName,
+  });
+  item.save();
+  res.redirect("/");
+});
 
-  // if (req.body.list === "Work") {
-  //   workItems.push(item);
-  //   res.redirect("/work");
-  // } else {
-  //   items.push(item);
-  //   res.redirect("/");
-  // }
+app.post("/delete", async function (req, res) {
+  const checkedItem = req.body.checkbox;
+  try {
+    await items.deleteOne({ _id: checkedItem });
+    console.log("Successfully deleted item from DB");
+  } catch (err) {
+    console.error(err);
+  }
+  res.redirect("/");
 });
 
 app.get("/work", function (req, res) {
