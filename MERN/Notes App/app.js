@@ -23,9 +23,18 @@ const item3 = new items({ name: "Durian" });
 
 const collectionItems = [item1, item2, item3];
 
+const listSchema = {
+  name: String,
+  items: [itemSchema],
+};
+
+const listItem = mongoose.model("List", listSchema);
+
+//Get root page (/Home)
 app.get("/", async (req, res) => {
   try {
     const foundItems = await items.find({}).exec();
+    console.log(foundItems);
 
     if (foundItems.length === 0) {
       await items.insertMany(collectionItems);
@@ -33,22 +42,35 @@ app.get("/", async (req, res) => {
     }
 
     console.log("Successfully retrieved items from DB");
-    res.render("list", { newListItems: foundItems });
+    res.render("list", { listTitle: "Today", newListItems: foundItems });
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
   }
 });
 
-app.post("/", function (req, res) {
+//Add new notes
+app.post("/", async function (req, res) {
   const itemName = req.body.newItem;
+  const listName = req.body.list;
+
   const item = new items({
     name: itemName,
   });
-  item.save();
-  res.redirect("/");
+
+  if (listName === "Today") {
+    console.log("This is listName: " + listName);
+    await item.save();
+    res.redirect("/");
+  } else {
+    const newItem = await listItem.findOne({ name: listName });
+    newItem.items.push(item);
+    await newItem.save();
+    res.redirect("/" + listName);
+  }
 });
 
+//Delete notes
 app.post("/delete", async function (req, res) {
   const checkedItem = req.body.checkbox;
   try {
@@ -60,14 +82,33 @@ app.post("/delete", async function (req, res) {
   res.redirect("/");
 });
 
-app.get("/work", function (req, res) {
-  res.render("list", { listTitle: "Work List", newListItems: workItems });
+//Create custom route
+app.get("/:customRoute", async function (req, res) {
+  const userRoute = req.params.customRoute;
+  const checkList = await listItem.findOne({ name: userRoute });
+  try {
+    if (!checkList) {
+      console.log("Doesnt exists");
+      const list = new listItem({
+        name: userRoute,
+        items: collectionItems,
+      });
+      await list.save();
+      res.redirect("/" + userRoute);
+    } else {
+      console.log("Exists");
+      res.render("list", {
+        listTitle: checkList.name,
+        newListItems: checkList.items,
+      });
+    }
+  } catch (e) {
+    console.error(err);
+    return res.status(500).send("Internal Server Error");
+  }
 });
 
-app.get("/about", function (req, res) {
-  res.render("about");
-});
-
+//Listen to server
 app.listen(3000, function () {
   console.log("Server started on port 3000");
 });
