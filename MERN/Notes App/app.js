@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const _ = require("lodash");
 
 const app = express();
 
@@ -73,18 +74,28 @@ app.post("/", async function (req, res) {
 //Delete notes
 app.post("/delete", async function (req, res) {
   const checkedItem = req.body.checkbox;
+  const listName = req.body.listName;
+
   try {
-    await items.deleteOne({ _id: checkedItem });
-    console.log("Successfully deleted item from DB");
-  } catch (err) {
-    console.error(err);
+    if (listName === "Today") {
+      await items.deleteOne({ _id: checkedItem });
+      console.log("Successfully deleted item from DB");
+      res.redirect("/");
+    } else {
+      await listItem.findOneAndUpdate(
+        { name: listName },
+        { $pull: { items: { _id: checkedItem } } }
+      );
+      res.redirect("/" + listName);
+    }
+  } catch (error) {
+    console.log(error);
   }
-  res.redirect("/");
 });
 
 //Create custom route
 app.get("/:customRoute", async function (req, res) {
-  const userRoute = req.params.customRoute;
+  const userRoute = _.capitalize(req.params.customRoute);
   const checkList = await listItem.findOne({ name: userRoute });
   try {
     if (!checkList) {
@@ -102,7 +113,7 @@ app.get("/:customRoute", async function (req, res) {
         newListItems: checkList.items,
       });
     }
-  } catch (e) {
+  } catch (err) {
     console.error(err);
     return res.status(500).send("Internal Server Error");
   }
