@@ -23,10 +23,21 @@ const item3 = new items({ name: "Durian" });
 
 const collectionItems = [item1, item2, item3];
 
-// items.insertMany(collectionItems);
+app.get("/", async (req, res) => {
+  try {
+    const foundItems = await items.find({}).exec();
 
-app.get("/", function (req, res) {
-  res.render("list", { newListItems: collectionItems });
+    if (foundItems.length === 0) {
+      await items.insertMany(collectionItems);
+      return res.redirect("/");
+    }
+
+    console.log("Successfully retrieved items from DB");
+    res.render("list", { newListItems: foundItems });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.post("/", function (req, res) {
