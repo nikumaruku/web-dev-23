@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-//Edit recipe ---> Study this part
+//Edit recipe*
 router.put("/", async (req, res) => {
   try {
     const recipe = await RecipesModel.findById(req.body.recipeID);
@@ -37,7 +37,7 @@ router.put("/", async (req, res) => {
   }
 });
 
-//Get recipe by id ---> Study this part
+//Get recipe by id*
 router.get("/savedRecipes/id", async (req, res) => {
   try {
     const user = await RecipesModel.findById(req.body.userID);
@@ -47,7 +47,7 @@ router.get("/savedRecipes/id", async (req, res) => {
   }
 });
 
-//Get saved recipes ---> Study this part
+//Get saved recipes*
 router.get("/savedRecipes", async (req, res) => {
   try {
     const user = await RecipesModel.findById(req.body.userID);
