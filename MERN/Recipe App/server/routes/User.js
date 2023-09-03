@@ -24,18 +24,28 @@ router.post("/register", async (req, res) => {
 //Login route
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const user = await UserModel.findOne({ username: username });
+  
+  try {
+    const user = await UserModel.findOne({ username: username });
 
-  if (!user) return res.json({ message: "User does not exist!" });
+    if (!user) {
+      return res.status(401).json({ message: "Username or password is incorrect!" });
+    }
 
-  const passwordValid = await bcrypt.compare(password, user.password);
+    const passwordValid = await bcrypt.compare(password, user.password);
 
-  if (!passwordValid)
-    return res.json({ message: "Username or password is incorrect!" });
+    if (!passwordValid) {
+      return res.status(401).json({ message: "Username or password is incorrect!" });
+    }
 
-  const token = jwt.sign({ id: user._id }, "secret");
-  res.json({ token, userID: user._id });
+    const token = jwt.sign({ id: user._id }, "secret");
+    res.json({ token, userID: user._id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
+
 
 export { router as userRouter };
 
