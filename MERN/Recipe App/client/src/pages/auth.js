@@ -31,7 +31,7 @@ const Login = () => {
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Something went wrong! Try again");
+      alert("Username or password is incorrect! Please try again");
     }
   };
 
