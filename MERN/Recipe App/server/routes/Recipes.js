@@ -1,5 +1,6 @@
 import express from "express";
 import { RecipesModel } from "../models/Recipes.js";
+import { UserModel } from "../models/User.js";
 
 const router = express.Router();
 
@@ -24,11 +25,11 @@ router.post("/", async (req, res) => {
   }
 });
 
-//Edit recipe*
+//Save recipe*
 router.put("/", async (req, res) => {
   try {
     const recipe = await RecipesModel.findById(req.body.recipeID);
-    const user = await RecipesModel.findById(req.body.userID);
+    const user = await UserModel.findById(req.body.userID);
     user.savedRecipes.push(recipe);
     await user.save();
     res.json({ savedRecipes: user.savedRecipes });
@@ -37,20 +38,20 @@ router.put("/", async (req, res) => {
   }
 });
 
-//Get recipe by id*
-router.get("/savedRecipes/id", async (req, res) => {
+//Get saved recipes*
+router.get("/savedRecipes/id/:userID", async (req, res) => {
   try {
-    const user = await RecipesModel.findById(req.body.userID);
+    const user = await UserModel.findById(req.params.userID);
     res.json({ savedRecipes: user?.savedRecipes });
   } catch (err) {
     console.error({ message: err });
   }
 });
 
-//Get saved recipes*
-router.get("/savedRecipes", async (req, res) => {
+//Display saved recipes*
+router.get("/savedRecipes/:userID", async (req, res) => {
   try {
-    const user = await RecipesModel.findById(req.body.userID);
+    const user = await UserModel.findById(req.params.userID);
     const savedRecipes = await RecipesModel.find({
       _id: { $in: user.savedRecipes },
     });
