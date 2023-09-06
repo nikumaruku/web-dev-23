@@ -67,6 +67,46 @@ app.get("/books/:id", async (req, res) => {
   }
 });
 
+//Update book information
+app.put("/books/:id", async (req, res) => {
+  try {
+    const bookID = req.params.id;
+
+    if (!req.body.title || !req.body.author || !req.body.publishYear) {
+      return res
+        .status(400)
+        .json({ error: "Please fill in all the book details!" });
+    }
+
+    const updatedBookInfo = {
+      title: req.body.title,
+      author: req.body.author,
+      publishYear: req.body.publishYear,
+    };
+
+    const book = await BookModel.findByIdAndUpdate(
+      { _id: bookID },
+      updatedBookInfo
+    );
+    res
+      .status(200)
+      .json({ message: "Book info has been successfully updated!" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating book information!" });
+  }
+});
+
+//Delete book based on ID
+app.delete("/books/:id", async (req, res) => {
+  try {
+    const bookID = req.params.id;
+    const book = await BookModel.findOneAndDelete({ _id: bookID });
+    res.status(200).json({ message: "Book has been successfully deleted!" });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching book requested!" });
+  }
+});
+
 app.listen(port, (req, res) => {
   console.log(`Server is running on port ${port}`);
 });
