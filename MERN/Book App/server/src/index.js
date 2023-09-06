@@ -50,9 +50,20 @@ app.post("/books", async (req, res) => {
 app.get("/books", async (req, res) => {
   try {
     const allBooks = await BookModel.find({});
-    res.json(allBooks);
+    res.status(200).json(allBooks);
   } catch (error) {
     res.status(500).json({ message: "Error fetching book data" });
+  }
+});
+
+//Get book by ID
+app.get("/books/:id", async (req, res) => {
+  try {
+    const bookID = req.params.id;
+    const book = await BookModel.findById({ _id: bookID });
+    res.status(200).json(book);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching book requested!" });
   }
 });
 
