@@ -21,7 +21,9 @@ mongoose
   });
 
 //--------> Routes
-app.post("/book", async (req, res) => {
+
+//Create new book
+app.post("/books", async (req, res) => {
   try {
     if (!req.body.title || !req.body.author || !req.body.publishYear) {
       return res
@@ -44,8 +46,14 @@ app.post("/book", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Server is ok");
+//Get all books
+app.get("/books", async (req, res) => {
+  try {
+    const allBooks = await BookModel.find({});
+    res.json(allBooks);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching book data" });
+  }
 });
 
 app.listen(port, (req, res) => {
