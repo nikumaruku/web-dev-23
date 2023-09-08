@@ -1,12 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import { bookRouter } from "../router/bookRouter.js";
+import cors from 'cors';
 
 const app = express();
 const port = 3001;
 
 //Express middleware
 app.use(express.json());
+app.use(cors())
 
 //Routes
 app.use("/books", bookRouter);
